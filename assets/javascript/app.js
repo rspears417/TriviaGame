@@ -1,168 +1,174 @@
+//Questions
 
- 
-//Click to Start
-//Timer begins at 60 seconds and countdown
-//Player goes through all 10 questions
-//player can only guess one answer per question
-//Once completed, player submit's answers
-//HTML is updated with users score
-//Score includes: time spent, answers correct, and answers wrong */
+var questions = [{
+  question: "In what month is Harry Potter's Birthday",
+  answers: ["November", "March", "August", "July"],
+  correctAnswer: "July",
+  image:"https://media.giphy.com/media/26BRzozg4TCBXv6QU/giphy-downsized.gif"
+}, {
+  question: "What do the passwords for Dumbledore's office all have in common?",
+  answers: ["Names of Sweets", "Names of Spells", "Names of Professors", "Names of Fruit"],
+  correctAnswer: "Names Of Sweets",
+  image:"https://media.giphy.com/media/ZB19HE9rRWhm8/giphy-downsized.gif"
+}, {
+  question: "Which language, like Voldemort, is Harry able to speak?",
+  answers: ["Mermish", "Parseltongue", "Elfish", "Troll"],
+  correctAnswer: "Parseltongue",
+  image:"https://media.giphy.com/media/47szmfLbvap8I/giphy.gif"
+}, {
+  question: "Who is the attractive barmaid and owner of the Three Broomsticks in Hogsmeade?",
+  answers: ["Madam Hooch", "Madam Pomfrey", "Madam Rosmerta", "Madam Maxine"],
+  correctAnswer: "Madam Rosmerta",
+  image:"https://media.giphy.com/media/lqrfa12pjBWlq/giphy-downsized.gif"
+}, {
+  question: 'Which Quidditch team does Ron support?',
+  answers: ["Chudley Cannons", "Puddlemere United", "Wimbourne Wasps", "Tutshill Tornados"],
+  correctAnswer: "Chudley Cannons",
+  image:"https://media.giphy.com/media/vWXBcu2vP8h8Y/giphy-downsized.gif"
+}, {
+  question: 'What is the potion Harry and Ron use to transform into Crabbe and Goyle?',
+  answers: ["Mandrake Potion", "Polyjuice Potion", "Felix Felicis", "Elixir of Life"],
+  correctAnswer: "Polyjuice Potion",
+  image:"https://media.giphy.com/media/WLXYBlFuBiuQM/giphy.gif"
+}, {
+  question: " Which animal is the house emblem for Gryffindor?",
+  answers: ["Lion", "Badger", "Snake", "Wolf"],
+  correctAnswer: "Lion",
+  image:"https://i.gifer.com/9k1p.gif"
+}, {
+  question: "Which device enabled Hermione to attend three classes at once in her third year?",
+  answers: ["Remembrall", "Time-Turner", "Philosopher's Stone", "Sneakoscope"],
+  correctAnswer: "Time-Turner",
+  image:"https://media.giphy.com/media/k2AvcU8nZyg7K/giphy-downsized.gif"
+}];
 
-$(document).ready(function(){
-  
-    // event listeners
-    $("#remaining-time").hide();
-    $("#start").on('click', trivia.startGame);
-    $(document).on('click' , '.option', trivia.guessChecker);
-    
-  })
-  
-  var trivia = {
-    // trivia properties
-    correct: 0,
-    incorrect: 0,
-    unanswered: 0,
-    currentSet: 0,
-    timer: 20,
-    timerOn: false,
-    timerId : '',
-    // questions options and answers data
-   
-    // trivia methods
-    // method to initialize game
-    startGame: function(){
-      // restarting game results
-      trivia.currentSet = 0;
-      trivia.correct = 0;
-      trivia.incorrect = 0;
-      trivia.unanswered = 0;
-      clearInterval(trivia.timerId);
-      
-      // show game section
-      $('#game').show();
-      
-      //  empty last results
-      $('#results').html('');
-      
-      // show timer
-      $('#timer').text(trivia.timer);
-      
-      // remove start button
-      $('#start').hide();
-  
-      $('#remaining-time').show();
-      
-      // ask first question
-      trivia.nextQuestion();
-      
-    },
-    // method to loop through and display questions and options 
-    nextQuestion : function(){
-      
-      // set timer to 20 seconds each question
-      trivia.timer = 10;
-       $('#timer').removeClass('last-seconds');
-      $('#timer').text(trivia.timer);
-      
-      // to prevent timer speed up
-      if(!trivia.timerOn){
-        trivia.timerId = setInterval(trivia.timerRunning, 1000);
-      }
-      
-      // gets all the questions then indexes the current questions
-      var questionContent = Object.values(trivia.questions)[trivia.currentSet];
-      $('#question').text(questionContent);
-      
-      // an array of all the user options for the current question
-      var questionOptions = Object.values(trivia.options)[trivia.currentSet];
-      
-      // creates all the trivia guess options in the html
-      $.each(questionOptions, function(index, key){
-        $('#options').append($('<button class="option btn btn-info btn-lg">'+key+'</button>'));
-      })
-      
-    },
-    // method to decrement counter and count unanswered if timer runs out
-    timerRunning : function(){
-      // if timer still has time left and there are still questions left to ask
-      if(trivia.timer > -1 && trivia.currentSet < Object.keys(trivia.questions).length){
-        $('#timer').text(trivia.timer);
-        trivia.timer--;
-          if(trivia.timer === 4){
-            $('#timer').addClass('last-seconds');
-          }
-      }
-      // the time has run out and increment unanswered, run result
-      else if(trivia.timer === -1){
-        trivia.unanswered++;
-        trivia.result = false;
-        clearInterval(trivia.timerId);
-        resultId = setTimeout(trivia.guessResult, 1000);
-        $('#results').html('<h3>Out of time! The answer was '+ Object.values(trivia.answers)[trivia.currentSet] +'</h3>');
-      }
-      // if all the questions have been shown end the game, show results
-      else if(trivia.currentSet === Object.keys(trivia.questions).length){
-        
-        // adds results of game (correct, incorrect, unanswered) to the page
-        $('#results')
-          .html('<h3>Thank you for playing!</h3>'+
-          '<p>Correct: '+ trivia.correct +'</p>'+
-          '<p>Incorrect: '+ trivia.incorrect +'</p>'+
-          '<p>Unaswered: '+ trivia.unanswered +'</p>'+
-          '<p>Please play again!</p>');
-        
-        // hide game sction
-        $('#game').hide();
-        
-        // show start button to begin a new game
-        $('#start').show();
-      }
-      
-    },
-    // method to evaluate the option clicked
-    guessChecker : function() {
-      
-      // timer ID for gameResult setTimeout
-      var resultId;
-      
-      // the answer to the current question being asked
-      var currentAnswer = Object.values(trivia.answers)[trivia.currentSet];
-      
-      // if the text of the option picked matches the answer of the current question, increment correct
-      if($(this).text() === currentAnswer){
-        // turn button green for correct
-        $(this).addClass('btn-success').removeClass('btn-info');
-        
-        trivia.correct++;
-        clearInterval(trivia.timerId);
-        resultId = setTimeout(trivia.guessResult, 1000);
-        $('#results').html('<h3>Correct Answer!</h3>');
-      }
-      // else the user picked the wrong option, increment incorrect
-      else{
-        // turn button clicked red for incorrect
-        $(this).addClass('btn-danger').removeClass('btn-info');
-        
-        trivia.incorrect++;
-        clearInterval(trivia.timerId);
-        resultId = setTimeout(trivia.guessResult, 1000);
-        $('#results').html('<h3>Better luck next time! '+ currentAnswer +'</h3>');
-      }
-      
-    },
-    // method to remove previous question results and options
-    guessResult : function(){
-      
-      // increment to next question set
-      trivia.currentSet++;
-      
-      // remove the options and results
-      $('.option').remove();
-      $('#results h3').remove();
-      
-      // begin next question
-      trivia.nextQuestion();
-       
+var panel = $('#quiz-area');
+var countStartNumber = 30;
+
+
+
+
+//CLICK EVENTS
+
+
+$(document).on('click', '#start-over', function(e) {
+  game.reset();
+});
+
+$(document).on('click', '.answer-button', function(e) {
+  game.clicked(e);
+});
+
+$(document).on('click', '#start', function(e) {
+  $('#subwrapper').prepend('<h2>Time Remaining: <span id="counter-number">30</span> Seconds</h2>');
+  game.loadQuestion();
+});
+
+
+
+
+
+
+var game = {
+  questions:questions,
+  currentQuestion:0,
+  counter:countStartNumber,
+  correct:0,
+  incorrect:0,
+  countdown: function(){
+    game.counter--;
+    $('#counter-number').html(game.counter);
+
+    if (game.counter === 0){
+      console.log('TIME UP');
+      game.timeUp();
     }
-  
+  },
+  loadQuestion: function(){
+    timer = setInterval(game.countdown, 1000);
+    panel.html('<h2>' + questions[this.currentQuestion].question + '</h2>' );
+    for (var i = 0; i<questions[this.currentQuestion].answers.length; i++){
+      panel.append('<button class="answer-button" id="button"' + 'data-name="' + questions[this.currentQuestion].answers[i] + '">' + questions[this.currentQuestion].answers[i]+ '</button>');
+    }
+  },
+  nextQuestion: function(){
+    game.counter = countStartNumber;
+    $('#counter-number').html(game.counter);
+    game.currentQuestion++;
+    game.loadQuestion();
+  },
+  timeUp: function (){
+    clearInterval(timer);
+    $('#counter-number').html(game.counter);
+
+    panel.html('<h2>Out of Time!</h2>');
+    panel.append('<h3>The Correct Answer was: ' + questions[this.currentQuestion].correctAnswer);
+    panel.append('<img src="' + questions[this.currentQuestion].image + '" />');
+
+    if (game.currentQuestion === questions.length - 1){
+      setTimeout(game.results, 3 * 1000);
+    } else {
+      setTimeout(game.nextQuestion, 3 * 1000);
+    }
+  },
+  results: function() {
+    clearInterval(timer);
+
+    panel.html('<h2>All done, heres how you did!</h2>');
+    $('#counter-number').html(game.counter);
+    panel.append('<h3>Correct Answers: ' + game.correct + '</h3>');
+    panel.append('<h3>Incorrect Answers: ' + game.incorrect + '</h3>');
+    panel.append('<h3>Unanswered: ' + (questions.length - (game.incorrect + game.correct)) + '</h3>');
+    panel.append('<br><button id="start-over">Start Over?</button>');
+  },
+  clicked: function(e) {
+    clearInterval(timer);
+
+    if ($(e.target).data("name") === questions[this.currentQuestion].correctAnswer){
+      this.answeredCorrectly();
+    } else {
+      this.answeredIncorrectly();
+    }
+  },
+  answeredIncorrectly: function() {
+    game.incorrect++;
+    clearInterval(timer);
+    panel.html('<h2>Nope!</h2>');
+    panel.append('<h3>The Correct Answer was: ' + questions[game.currentQuestion].correctAnswer + '</h3>');
+    panel.append('<img src="' + questions[game.currentQuestion].image + '" />');
+
+    if (game.currentQuestion === questions.length - 1){
+      setTimeout(game.results, 3 * 1000);
+    } else {
+      setTimeout(game.nextQuestion, 3 * 1000);
+    }
+  },
+  answeredCorrectly: function(){
+    clearInterval(timer);
+    game.correct++;
+    panel.html('<h2>Correct!</h2>');
+    panel.append('<img src="' + questions[game.currentQuestion].image + '" />');
+
+    if (game.currentQuestion === questions.length - 1){
+      setTimeout(game.results, 3 * 1000);
+    } else {
+      setTimeout(game.nextQuestion, 3 * 1000);
+    }
+  },
+  reset: function(){
+    this.currentQuestion = 0;
+    this.counter = countStartNumber;
+    this.correct = 0;
+    this.incorrect = 0;
+    this.loadQuestion();
   }
+};
+
+
+
+
+
+
+
+
+
